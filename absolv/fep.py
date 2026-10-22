@@ -432,6 +432,12 @@ def apply_fep(
             The expression **must** include ``"lambda_sterics"``.
     """
 
+    import absolv.interax
+
+    if absolv.interax.is_interax_system(system):
+        assert custom_alchemical_potential is None, "custom potentials are not supported for InteraxFF systems"
+        return absolv.interax.apply_fep_interax(system, alchemical_indices, persistent_indices)
+
     system = copy.deepcopy(system)
 
     (
