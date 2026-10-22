@@ -4,7 +4,7 @@ import typing
 import femto.md.config
 import openmm.unit
 import pydantic
-from femto.md.utils.models import OpenMMQuantity
+from pydantic_units import OpenMMQuantity  # moved out of femto.md.utils.models in femto 0.3
 
 KCAL_MOL = openmm.unit.kilocalories_per_mole
 
