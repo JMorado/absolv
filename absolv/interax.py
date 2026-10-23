@@ -144,6 +144,17 @@ def apply_fep_interax(
     system = copy.deepcopy(system)
     solute_atoms = {i for values in alchemical_indices for i in values}
 
+    # Lone-pair virtual sites (interax.lonepairs) are extra particles appended after all atoms; a site whose
+    # defining particles belong to a solute molecule carries that molecule's q_lp and must be decoupled with it,
+    # or the "decoupled" solute keeps pulling on the solvent through its sites (found 2026-10-23: trimethylamine
+    # lambda=0 end state off by +2.7 kJ/mol with models_v3R4bfdE1La).
+    for i in range(system.getNumParticles()):
+        if system.isVirtualSite(i):
+            vs = system.getVirtualSite(i)
+            parents = {vs.getParticle(k) for k in range(vs.getNumParticles())}
+            if parents & solute_atoms:
+                solute_atoms.add(i)
+
     _electrostatics_lambda(system, solute_atoms)
 
     custom = [f for f in system.getForces() if isinstance(f, openmm.CustomNonbondedForce)]
